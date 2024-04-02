@@ -54,7 +54,7 @@ function draw() {
   push(); translate(w / 2, h / 2);
   translate(mouseX - width / 2, (mouseY - height / 2) * 6);
   rotate(PI / 5);
-  
+  //UFO
   fill(200);
   torus(100, 20 );
   ambientLight(255);
