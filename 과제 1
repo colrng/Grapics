@@ -1,3 +1,4 @@
+//그래픽스 과제 1
 let cols, rows;
 let scl = 20;
 let w = 1400;
