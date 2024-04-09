@@ -216,20 +216,11 @@ function Snake() {
   };
 
   this.update = function () {
-    if (this.total === this.tail.length) {
-      for (let i = 0; i < this.tail.length - 1; i++) {
-        this.tail[i] = this.tail[i + 1];
-      }
-    }
-    this.tail[this.total - 1] = createVector(this.x, this.y);
+    this.x += this.xspeed * scl;
+    this.y += this.yspeed * scl;
 
-    this.x = this.x + this.xspeed * scl;
-    this.y = this.y + this.yspeed * scl;
-
-    if (this.x >= playfield || this.x < 0 || this.y >= playfield || this.y < 0) {
-      gameOver();
-      return;
-    }
+    // 꼬리를 그리지 않도록 설정
+    this.tail = [];
   };
 
   this.show = function () {
