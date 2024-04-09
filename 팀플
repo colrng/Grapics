@@ -16,7 +16,7 @@ function setup() {
   textAlign(CENTER, CENTER);
   textSize(32);
   fill(255);
-  text("게임 시작", width / 2, height / 2);
+  text("게임 시작 전 속도를 선택하세요 (1-9)", width / 2, height / 2);
 }
 
 function draw() {
@@ -100,11 +100,11 @@ function scoreboard() {
   text(s.score, 70, 625);
   text(s.highscore, 540, 625);
 
-  // 게임 시작 전에 현재 속도 표시
+  // 속도를 게임이 시작되기 전에만 표시
   if (!gameStarted) {
     textSize(24);
+    fill(255);
     text("선택한 속도: " + speedLevel, width / 2, height / 2 + 50);
-    text("속도 증가량: " + speedIncrease, width / 2, height / 2 + 80);
   }
 }
 
@@ -125,9 +125,9 @@ function keyPressed() {
   if (!gameStarted) {
     // 게임이 시작되지 않은 경우 속도를 변경할 수 있도록 설정
     if (keyCode === UP_ARROW) { // UP_ARROW 키를 누른 경우 속도 증가량 증가
-      speedIncrease++;
+      speedLevel = min(speedLevel + 1, 9); // 속도 증가
     } else if (keyCode === DOWN_ARROW) { // DOWN_ARROW 키를 누른 경우 속도 증가량 감소
-      speedIncrease = max(speedIncrease - 1, 1);
+      speedLevel = max(speedLevel - 1, 1); // 속도 감소
     } else if (keyCode === 69) { // 'e' 키를 누른 경우 게임 시작
       startGame();
     }
@@ -136,7 +136,6 @@ function keyPressed() {
       textSize(24);
       fill(255);
       text("선택한 속도: " + speedLevel, width / 2, height / 2 + 50);
-      text("속도 증가량: " + speedIncrease, width / 2, height / 2 + 80);
     }
   } else {
     // 게임이 시작된 경우에만 Snake의 방향을 변경할 수 있도록 설정
@@ -235,11 +234,7 @@ function Snake() {
 
   this.show = function () {
     fill(255);
-    for (let i = 0; i < this.tail.length; i++) {
-      rect(this.tail[i].x, this.tail[i].y, scl, scl);
-    }
-
-    rect(this.x, this.y, scl, scl);
+    rect(this.x, this.y, scl, scl); // 꼬리 없이 머리만 그림
   };
 }
 
