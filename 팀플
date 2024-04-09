@@ -16,7 +16,7 @@ function setup() {
   textAlign(CENTER, CENTER);
   textSize(32);
   fill(255);
-  text("게임 시작 전 속도를 선택하세요 (1-9)", width / 2, height / 2);
+  text("게임 시작", width / 2, height / 2);
 }
 
 function draw() {
