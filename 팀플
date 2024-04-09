@@ -1,3 +1,4 @@
+let s;
 let scl = 20;
 let food;
 let speedBoost; // 속도를 증가시키는 아이템
@@ -240,60 +241,63 @@ function Snake() {
 
 function drawShinChan() {
   // ShinChan 캐릭터 그리기
+  let sizeFactor = 0.3;
+  
   push();//얼굴 채우기
   stroke(255,218,185);
   fill(255,218,185);
-  rect(s.x, s.y, 65, 60);
-  rect(s.x + 40, s.y, 50, 40);
+  rect(s.x, s.y, 65 * sizeFactor, 60 * sizeFactor);
+  rect(s.x + 40 * sizeFactor, s.y, 50 * sizeFactor, 40 * sizeFactor);
   pop();
   push();//왼쪽 볼, 머리
   stroke(0);
   fill(255,218,185);
-  arc(s.x + 45, s.y, 90, 90, PI, 0);
-  arc(s.x, s.y + 30, 70, 60, PI/2, PI + PI/2);
+  arc(s.x + 45 * sizeFactor, s.y, 90 * sizeFactor, 90 * sizeFactor, PI, 0);
+  arc(s.x, s.y + 30 * sizeFactor, 70 * sizeFactor, 60 * sizeFactor, PI/2, PI + PI/2);
   pop();
   push();//머리카락
   noFill();
-  strokeWeight(15);
-  arc(s.x + 45, s.y, 90, 90, PI * (4.6/4), PI/360);
+  strokeWeight(15 * sizeFactor);
+  arc(s.x + 45 * sizeFactor, s.y, 90 * sizeFactor, 90 * sizeFactor, PI * (4.6/4), PI/360);
   pop();
 
   push();//입 아래쪽 선
-  line(s.x, s.y + 60, s.x + 58, s.y + 60);
+  line(s.x, s.y + 60 * sizeFactor, s.x + 58 * sizeFactor, s.y + 60 * sizeFactor);
   pop();
   push();//귀
   stroke(0);
   fill(255,218,185);
-  arc(s.x + 90, s.y + 20, 34, 40, PI + PI/2 - 6.6, PI/1.93);
+  arc(s.x + 90 * sizeFactor, s.y + 20 * sizeFactor, 34 * sizeFactor, 40 * sizeFactor, PI + PI/2 - 6.6, PI/1.93);
   pop();
   push();//입
   fill(255,0,0);
-  ellipse(s.x + 20, s.y + 60, 10, 20);
+  ellipse(s.x + 20 * sizeFactor, s.y + 60 * sizeFactor, 10 * sizeFactor, 20 * sizeFactor);
   pop();
   push();//턱오른쪽
   stroke(0);
   fill(255,218,185);
-  arc(s.x + 58, s.y + 40, 60, 40, 0, PI/2);
+  arc(s.x + 58 * sizeFactor, s.y + 40 * sizeFactor, 60 * sizeFactor, 40 * sizeFactor, 0, PI/2);
   pop();
   push();//눈썹
   stroke(50);
   noFill();
-  strokeWeight(8);
-  bezier(s.x, s.y - 15, s.x + 15, s.y - 30, s.x + 15, s.y - 30, s.x + 30, s.y - 15);
-  bezier(s.x + 45, s.y - 15, s.x + 60, s.y - 30, s.x + 60, s.y - 30, s.x + 75, s.y - 15);
-  strokeWeight(2);
-  bezier(s.x, s.y - 5, s.x + 15, s.y - 15, s.x + 15, s.y - 15, s.x + 30, s.y - 5);
-  bezier(s.x + 45, s.y - 5, s.x + 60, s.y - 15, s.x + 60, s.y - 15, s.x + 75, s.y - 5);
+  strokeWeight(8 * sizeFactor);
+  bezier(s.x, s.y - 15 * sizeFactor, s.x + 15 * sizeFactor, s.y - 30 * sizeFactor, s.x + 15 * sizeFactor, s.y - 30 * sizeFactor, s.x + 30 * sizeFactor, s.y - 15 * sizeFactor);
+  bezier(s.x + 45 * sizeFactor, s.y - 15 * sizeFactor, s.x + 60 * sizeFactor, s.y - 30 * sizeFactor, s.x + 60 * sizeFactor, s.y - 30 * sizeFactor, s.x + 75 * sizeFactor, s.y - 15 * sizeFactor);
+  strokeWeight(2 * sizeFactor);
+  bezier(s.x, s.y - 5 * sizeFactor, s.x + 15 * sizeFactor, s.y - 15 * sizeFactor, s.x + 15 * sizeFactor, s.y - 15 * sizeFactor, s.x + 30 * sizeFactor, s.y - 5 * sizeFactor);
+  bezier(s.x + 45 * sizeFactor, s.y - 5 * sizeFactor, s.x + 60 * sizeFactor, s.y - 15 * sizeFactor, s.x + 60 * sizeFactor, s.y - 15 * sizeFactor, s.x + 75 * sizeFactor, s.y - 5 * sizeFactor);
   pop();
   push();//눈
   fill(0);
-  ellipse(s.x + 20, s.y + 23, 20, 20);
-  ellipse(s.x + 53, s.y + 23, 20, 20);
+  ellipse(s.x + 20 * sizeFactor, s.y + 23 * sizeFactor, 20 * sizeFactor, 20 * sizeFactor);
+  ellipse(s.x + 53 * sizeFactor, s.y + 23 * sizeFactor, 20 * sizeFactor, 20 * sizeFactor);
   fill(255);
-  ellipse(s.x + 20, s.y + 23, 9, 9);
-  ellipse(s.x + 53, s.y + 23, 9, 9);
+  ellipse(s.x + 20 * sizeFactor, s.y + 23 * sizeFactor, 9 * sizeFactor, 9 * sizeFactor);
+  ellipse(s.x + 53 * sizeFactor, s.y + 23 * sizeFactor, 9 * sizeFactor, 9 * sizeFactor);
   pop();
 }
+
 
 function mouseClicked() {
   if (!gameStarted && mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
