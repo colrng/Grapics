@@ -2,6 +2,7 @@ let s;
 let scl = 20;
 let food;
 let playfield = 600;
+let obstacles = []; // 장애물 배열
 
 function setup() {
   createCanvas(playfield, 640);
@@ -9,6 +10,7 @@ function setup() {
   s = new Snake();
   frameRate(10);
   pickLocation();
+  generateObstacles(); // 장애물 생성
 }
 
 function draw() {
@@ -23,6 +25,12 @@ function draw() {
 
   fill(255, 0, 100);
   rect(food.x, food.y, scl, scl);
+
+  // 장애물 그리기
+  for (let i = 0; i < obstacles.length; i++) {
+    fill(255, 0, 0);
+    rect(obstacles[i].x, obstacles[i].y, scl, scl);
+  }
 }
 
 function pickLocation() {
@@ -36,6 +44,27 @@ function pickLocation() {
     let d = dist(food.x, food.y, pos.x, pos.y);
     if (d < 1) {
       pickLocation();
+    }
+  }
+}
+
+function generateObstacles() {
+  // 중앙에 큰 십자가 모양의 장애물 생성
+  let centerX = playfield / 2;
+  let centerY = playfield / 2;
+  let crossLength = 200;
+
+  // 수평선 생성
+  for (let x = centerX - crossLength / 2; x <= centerX + crossLength / 2; x += scl) {
+    let obstacle = createVector(x, centerY);
+    obstacles.push(obstacle);
+  }
+
+  // 수직선 생성
+  for (let y = centerY - crossLength / 2; y <= centerY + crossLength / 2; y += scl) {
+    if (y !== centerY) { // 가운데 선은 이미 수평선에서 생성했으므로 제외
+      let obstacle = createVector(centerX, y);
+      obstacles.push(obstacle);
     }
   }
 }
@@ -115,7 +144,19 @@ function Snake() {
         this.total = 0;
         this.score = 0;
         this.tail = [];
-        gameOver(); // 게임 종료 함수 호출
+        gameOver();
+      }
+    }
+
+    // Snake가 십자가 모양의 장애물과 충돌하는지 확인
+    for (let i = 0; i < obstacles.length; i++) {
+      let obstacle = obstacles[i];
+      let d = dist(this.x, this.y, obstacle.x, obstacle.y);
+      if (d < 1) {
+        this.total = 0;
+        this.score = 0;
+        this.tail = [];
+        gameOver();
       }
     }
   };
@@ -132,7 +173,7 @@ function Snake() {
     this.y = this.y + this.yspeed * scl;
 
     if (this.x >= playfield || this.x < 0 || this.y >= playfield || this.y < 0) {
-      gameOver(); // 벽 충돌 시 게임 종료 함수 호출
+      gameOver();
       return;
     }
   };
