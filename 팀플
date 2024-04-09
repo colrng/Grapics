@@ -1,14 +1,17 @@
 let s;
 let scl = 20;
 let food;
+let speedBoost; // 속도를 증가시키는 아이템
 let playfield = 600;
 let obstacles = []; // 장애물 배열
 let gameStarted = false; // 게임이 시작되었는지 여부를 나타내는 변수
+let speedLevel = 5; // 속도 레벨 (기본값은 5)
+let speedIncrease = 1; // 속도 증가량
 
 function setup() {
   createCanvas(playfield, 640);
   background(51);
-  frameRate(10);
+  frameRate(10); // 기본 프레임 속도
   generateObstacles(); // 장애물 생성
   textAlign(CENTER, CENTER);
   textSize(32);
@@ -23,12 +26,20 @@ function draw() {
     if (s.eat(food)) {
       pickLocation();
     }
+    if (s.eat(speedBoost)) { // 속도를 증가시키는 아이템을 먹으면
+      speedLevel += speedIncrease; // 속도 증가
+      frameRate(speedLevel); // 프레임 속도 재설정
+      pickLocation(); // 새로운 아이템 위치 선택
+    }
     s.death();
     s.update();
     s.show();
 
     fill(255, 0, 100);
     rect(food.x, food.y, scl, scl);
+
+    fill(0, 255, 0); // 속도를 증가시키는 아이템 색상 (녹색)
+    rect(speedBoost.x, speedBoost.y, scl, scl);
 
     // 장애물 그리기
     for (let i = 0; i < obstacles.length; i++) {
@@ -44,10 +55,14 @@ function pickLocation() {
   food = createVector(floor(random(cols)), floor(random(rows)));
   food.mult(scl);
 
+  speedBoost = createVector(floor(random(cols)), floor(random(rows)));
+  speedBoost.mult(scl);
+
   for (let i = 0; i < s.tail.length; i++) {
     let pos = s.tail[i];
-    let d = dist(food.x, food.y, pos.x, pos.y);
-    if (d < 1) {
+    let d1 = dist(food.x, food.y, pos.x, pos.y);
+    let d2 = dist(speedBoost.x, speedBoost.y, pos.x, pos.y);
+    if (d1 < 1 || d2 < 1) {
       pickLocation();
     }
   }
@@ -84,18 +99,47 @@ function scoreboard() {
   text("Highscore: ", 450, 625);
   text(s.score, 70, 625);
   text(s.highscore, 540, 625);
+
+  // 게임 시작 전에 현재 속도 표시
+  if (!gameStarted) {
+    textSize(24);
+    text("선택한 속도: " + speedLevel, width / 2, height / 2 + 50);
+    text("속도 증가량: " + speedIncrease, width / 2, height / 2 + 80);
+  }
 }
 
 function startGame() {
   gameStarted = true;
+  frameRate(speedLevel); // 선택한 속도로 프레임 속도 설정
   s = new Snake();
   pickLocation();
 }
 
+function restartGame() {
+  gameStarted = false;
+  loop(); // 게임 루프 재시작
+  setup(); // 새로운 게임 설정
+}
+
 function keyPressed() {
   if (!gameStarted) {
-    startGame();
+    // 게임이 시작되지 않은 경우 속도를 변경할 수 있도록 설정
+    if (keyCode === UP_ARROW) { // UP_ARROW 키를 누른 경우 속도 증가량 증가
+      speedIncrease++;
+    } else if (keyCode === DOWN_ARROW) { // DOWN_ARROW 키를 누른 경우 속도 증가량 감소
+      speedIncrease = max(speedIncrease - 1, 1);
+    } else if (keyCode === 69) { // 'e' 키를 누른 경우 게임 시작
+      startGame();
+    }
+    // 속도가 변경되었을 때 속도와 속도 증가량을 다시 표시
+    if (!gameStarted) {
+      textSize(24);
+      fill(255);
+      text("선택한 속도: " + speedLevel, width / 2, height / 2 + 50);
+      text("속도 증가량: " + speedIncrease, width / 2, height / 2 + 80);
+    }
   } else {
+    // 게임이 시작된 경우에만 Snake의 방향을 변경할 수 있도록 설정
     if (keyCode === UP_ARROW) {
       s.dir(0, -1);
     } else if (keyCode === DOWN_ARROW) {
@@ -117,6 +161,7 @@ function gameOver() {
   textSize(24);
   text("점수: " + s.score, width / 2, height / 2);
   text("최고 점수: " + s.highscore, width / 2, height / 2 + 30);
+  text("마우스를 클릭하여 재시작하세요", width / 2, height / 2 + 100);
   noLoop();
 }
 
@@ -140,11 +185,6 @@ function Snake() {
     if (d < 1) {
       this.total++;
       this.score++;
-      text(this.score, 70, 625);
-      if (this.score > this.highscore) {
-        this.highscore = this.score;
-      }
-      text(this.highscore, 540, 625);
       return true;
     } else {
       return false;
@@ -206,5 +246,10 @@ function Snake() {
 function mouseClicked() {
   if (!gameStarted && mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
     startGame();
+  } else if (!gameStarted) {
+    // 게임이 시작되지 않은 상태에서 클릭했을 때는 아무 작업도 하지 않음
+    return;
+  } else {
+    restartGame();
   }
 }
