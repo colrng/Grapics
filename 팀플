@@ -1,4 +1,3 @@
-let s;
 let scl = 20;
 let food;
 let speedBoost; // 속도를 증가시키는 아이템
@@ -23,15 +22,6 @@ function draw() {
   if (gameStarted) {
     background(51);
     scoreboard();
-    if (s.eat(food)) {
-      pickLocation();
-    }
-    if (s.eat(speedBoost)) { // 속도를 증가시키는 아이템을 먹으면
-      speedLevel += speedIncrease; // 속도 증가
-      frameRate(speedLevel); // 프레임 속도 재설정
-      pickLocation(); // 새로운 아이템 위치 선택
-    }
-    s.death();
     s.update();
     s.show();
 
@@ -179,54 +169,130 @@ function Snake() {
     this.yspeed = y;
   };
 
-  this.eat = function (pos) {
-    let d = dist(this.x, this.y, pos.x, pos.y);
-    if (d < 1) {
-      this.total++;
-      this.score++;
+  this.checkBoundaryCollision = function() {
+    if (this.x < 0 || this.x >= width || this.y < 0 || this.y >= height) {
       return true;
     } else {
       return false;
     }
   };
 
-  this.death = function () {
-    for (let i = 0; i < this.tail.length; i++) {
-      let pos = this.tail[i];
-      let d = dist(this.x, this.y, pos.x, pos.y);
-      if (d < 1) {
-        this.total = 0;
-        this.score = 0;
-        this.tail = [];
-        gameOver();
-      }
-    }
-
-    // Snake가 십자가 모양의 장애물과 충돌하는지 확인
-    for (let i = 0; i < obstacles.length; i++) {
-      let obstacle = obstacles[i];
-      let d = dist(this.x, this.y, obstacle.x, obstacle.y);
-      if (d < 1) {
-        this.total = 0;
-        this.score = 0;
-        this.tail = [];
-        gameOver();
-      }
+  this.checkCollisions = function(pos) {
+    let d = dist(this.x, this.y, pos.x, pos.y);
+    if (d < 1) {
+      return true;
+    } else {
+      return false;
     }
   };
 
   this.update = function () {
+    // Snake의 위치 업데이트
     this.x += this.xspeed * scl;
     this.y += this.yspeed * scl;
 
-    // 꼬리를 그리지 않도록 설정
-    this.tail = [];
+    // 벽과 충돌했을 때 게임 종료
+    if (this.checkBoundaryCollision()) {
+      this.total = 0;
+      this.score = 0;
+      this.tail = [];
+      gameOver();
+    }
+
+    // 아이템을 먹었을 때의 동작
+    if (this.checkCollisions(food)) {
+      this.total++;
+      this.score++;
+      pickLocation();
+    }
+
+    // 속도를 증가시키는 아이템을 먹었을 때의 동작
+    if (this.checkCollisions(speedBoost)) {
+      speedLevel += speedIncrease;
+      frameRate(speedLevel);
+      pickLocation();
+    }
+
+    // 장애물과 충돌했을 때의 동작
+    for (let i = 0; i < obstacles.length; i++) {
+      if (this.checkCollisions(obstacles[i])) {
+        this.total = 0;
+        this.score = 0;
+        this.tail = [];
+        gameOver();
+      }
+    }
+
+    // Snake의 꼬리 길이 조절
+    for (let i = 0; i < this.tail.length - 1; i++) {
+      this.tail[i] = this.tail[i + 1];
+    }
+    if (this.total >= 1) {
+      this.tail[this.total - 1] = createVector(this.x, this.y);
+    }
   };
 
   this.show = function () {
-    fill(255);
-    rect(this.x, this.y, scl, scl); // 꼬리 없이 머리만 그림
+    // 사용자가 만든 캐릭터 그리기
+    drawShinChan();
   };
+}
+
+function drawShinChan() {
+  // ShinChan 캐릭터 그리기
+  push();//얼굴 채우기
+  stroke(255,218,185);
+  fill(255,218,185);
+  rect(s.x, s.y, 65, 60);
+  rect(s.x + 40, s.y, 50, 40);
+  pop();
+  push();//왼쪽 볼, 머리
+  stroke(0);
+  fill(255,218,185);
+  arc(s.x + 45, s.y, 90, 90, PI, 0);
+  arc(s.x, s.y + 30, 70, 60, PI/2, PI + PI/2);
+  pop();
+  push();//머리카락
+  noFill();
+  strokeWeight(15);
+  arc(s.x + 45, s.y, 90, 90, PI * (4.6/4), PI/360);
+  pop();
+
+  push();//입 아래쪽 선
+  line(s.x, s.y + 60, s.x + 58, s.y + 60);
+  pop();
+  push();//귀
+  stroke(0);
+  fill(255,218,185);
+  arc(s.x + 90, s.y + 20, 34, 40, PI + PI/2 - 6.6, PI/1.93);
+  pop();
+  push();//입
+  fill(255,0,0);
+  ellipse(s.x + 20, s.y + 60, 10, 20);
+  pop();
+  push();//턱오른쪽
+  stroke(0);
+  fill(255,218,185);
+  arc(s.x + 58, s.y + 40, 60, 40, 0, PI/2);
+  pop();
+  push();//눈썹
+  stroke(50);
+  noFill();
+  strokeWeight(8);
+  bezier(s.x, s.y - 15, s.x + 15, s.y - 30, s.x + 15, s.y - 30, s.x + 30, s.y - 15);
+  bezier(s.x + 45, s.y - 15, s.x + 60, s.y - 30, s.x + 60, s.y - 30, s.x + 75, s.y - 15);
+  strokeWeight(2);
+  bezier(s.x, s.y - 5, s.x + 15, s.y - 15, s.x + 15, s.y - 15, s.x + 30, s.y - 5);
+  bezier(s.x + 45, s.y - 5, s.x + 60, s.y - 15, s.x + 60, s.y - 15, s.x + 75, s.y - 5);
+  pop();
+  push();//눈
+  fill(0);
+  ellipse(s.x + 20, s.y + 23, 20, 20);
+  ellipse(s.x + 53, s.y + 23, 20, 20);
+  fill(255);
+  ellipse(s.x + 20, s.y + 23, 9, 9);
+  ellipse(s.x + 53, s.y + 23, 9, 9);
+  pop();
 }
 
 function mouseClicked() {
